@@ -1,0 +1,146 @@
+/* Google Fonts are already loaded via index.html <link> tags.
+   This import serves as a fallback for environments that skip the HTML head. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────
+   Base layer overrides
+───────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+  }
+
+  body {
+    @apply bg-surface-50 font-sans text-surface-800 antialiased;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Typography defaults ── */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold leading-tight text-surface-900;
+  }
+
+  a {
+    @apply text-primary-600 transition-colors duration-150;
+  }
+
+  a:hover {
+    @apply text-primary-700;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  /* ── Selection color ── */
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+
+  ::-moz-selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+
+  /* ── Focus visible (keyboard nav) ── */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-surface-50;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Custom scrollbar (Webkit)
+───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-300 rounded-full;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-400;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-surface-100;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.surface.300') theme('colors.surface.100');
+}
+
+/* ─────────────────────────────────────────
+   Component layer helpers
+───────────────────────────────────────── */
+@layer components {
+  /* Glass card surface */
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-glass;
+  }
+
+  /* Shimmer skeleton loader */
+  .skeleton {
+    @apply rounded-lg bg-gradient-to-r from-surface-200 via-surface-100 to-surface-200;
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Page container */
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-16 md:py-24;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Utility overrides
+───────────────────────────────────────── */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

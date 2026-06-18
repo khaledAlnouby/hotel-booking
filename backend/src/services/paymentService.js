@@ -281,20 +281,28 @@ class PaymentService {
       }),
     ]);
 
-    // Notify the hotel owner
-    const ownerId = updated.room?.hotel?.ownerId;
-    if (ownerId) {
-      const guestName = [updated.user?.firstName, updated.user?.lastName]
-        .filter(Boolean).join(' ') || 'A guest';
-      const hotelName = updated.room?.hotel?.name ?? updated.hotelName;
+    // Notify the hotel owner and all admins
+    const ownerId   = updated.room?.hotel?.ownerId;
+    const guestName = [updated.user?.firstName, updated.user?.lastName]
+      .filter(Boolean).join(' ') || 'A guest';
+    const hotelName = updated.room?.hotel?.name ?? updated.hotelName;
+    const dateRange = `${updated.checkIn.toISOString().slice(0, 10)} → ${updated.checkOut.toISOString().slice(0, 10)}`;
+    const nights    = updated.nights;
 
+    if (ownerId) {
       notificationService.createNotification(
         ownerId,
         'BOOKING',
         `New booking at ${hotelName}`,
-        `${guestName} booked ${updated.roomName} for ${updated.nights} night${updated.nights !== 1 ? 's' : ''} (${updated.checkIn.toISOString().slice(0, 10)} → ${updated.checkOut.toISOString().slice(0, 10)}).`,
+        `${guestName} booked ${updated.roomName} for ${nights} night${nights !== 1 ? 's' : ''} (${dateRange}).`,
       ).catch(() => {});
     }
+
+    notificationService.notifyAllAdmins(
+      'BOOKING',
+      `Booking confirmed — ${hotelName}`,
+      `${guestName} confirmed a reservation at ${hotelName} (${updated.roomName}) for ${nights} night${nights !== 1 ? 's' : ''} (${dateRange}).`,
+    ).catch(() => {});
 
     return updated;
   }

@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../config/database.js';
 import { ApiError } from '../utils/apiResponse.js';
+import notificationService from './notificationService.js';
 
 class AuthService {
   /**
@@ -65,6 +66,13 @@ class AuthService {
       where: { id: user.id },
       data: { refreshToken: tokens.refreshToken },
     });
+
+    // Notify all admins about the new registration
+    notificationService.notifyAllAdmins(
+      'SYSTEM',
+      'New user registered',
+      `${user.firstName} ${user.lastName} (${user.email}) just created a ${user.role.toLowerCase()} account.`,
+    ).catch(() => {});
 
     return { user, ...tokens };
   }

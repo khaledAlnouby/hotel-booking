@@ -55,6 +55,19 @@ class NotificationService {
   }
 
   /**
+   * Send the same notification to every ADMIN account.
+   */
+  async notifyAllAdmins(type, title, message) {
+    const admins = await prisma.user.findMany({
+      where: { role: 'ADMIN', isActive: true },
+      select: { id: true },
+    });
+    await Promise.all(
+      admins.map((a) => this.createNotification(a.id, type, title, message).catch(() => {}))
+    );
+  }
+
+  /**
    * Mark all notifications for a user as read.
    */
   async markAllAsRead(userId) {

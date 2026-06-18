@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -42,10 +41,10 @@ function todayLabel() {
    Status badge
 ───────────────────────────────────────── */
 const STATUS_CONFIG = {
-  PENDING:   { variant: 'warning',  label: 'Pending'   },
-  CONFIRMED: { variant: 'success',  label: 'Confirmed' },
-  CANCELLED: { variant: 'danger',   label: 'Cancelled' },
-  COMPLETED: { variant: 'info',     label: 'Completed' },
+  PENDING: { variant: 'warning', label: 'Pending' },
+  CONFIRMED: { variant: 'success', label: 'Confirmed' },
+  CANCELLED: { variant: 'danger', label: 'Cancelled' },
+  COMPLETED: { variant: 'info', label: 'Completed' },
 };
 
 function StatusBadge({ status }) {
@@ -74,13 +73,13 @@ function StatCard({ label, value, Icon, colorClass, bgClass }) {
    CSS bar chart
 ───────────────────────────────────────── */
 const BAR_COLORS = {
-  PENDING:   { bg: 'bg-yellow-400', text: 'text-yellow-700' },
-  CONFIRMED: { bg: 'bg-green-400',  text: 'text-green-700'  },
-  CANCELLED: { bg: 'bg-red-400',    text: 'text-red-700'    },
-  COMPLETED: { bg: 'bg-blue-400',   text: 'text-blue-700'   },
-  CUSTOMER:  { bg: 'bg-primary-400', text: 'text-primary-700' },
-  OWNER:     { bg: 'bg-accent-400',  text: 'text-accent-700'  },
-  ADMIN:     { bg: 'bg-purple-400',  text: 'text-purple-700'  },
+  PENDING: { bg: 'bg-yellow-400', text: 'text-yellow-700' },
+  CONFIRMED: { bg: 'bg-green-400', text: 'text-green-700' },
+  CANCELLED: { bg: 'bg-red-400', text: 'text-red-700' },
+  COMPLETED: { bg: 'bg-blue-400', text: 'text-blue-700' },
+  CUSTOMER: { bg: 'bg-primary-400', text: 'text-primary-700' },
+  OWNER: { bg: 'bg-accent-400', text: 'text-accent-700' },
+  ADMIN: { bg: 'bg-purple-400', text: 'text-purple-700' },
 };
 
 function HorizontalBar({ label, count, total, colorBg, colorText }) {
@@ -107,8 +106,6 @@ function HorizontalBar({ label, count, total, colorBg, colorText }) {
    Main Component
 ───────────────────────────────────────── */
 export default function AdminDashboard() {
-  const [bookingsView, setBookingsView] = useState('table');
-
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['adminStats'],
     queryFn: () => api.get('/admin/dashboard'),
@@ -161,7 +158,7 @@ export default function AdminDashboard() {
   } = stats;
 
   const bookingTotal = Object.values(bookingsByStatus).reduce((a, b) => a + b, 0);
-  const userTotal    = Object.values(usersByRole).reduce((a, b) => a + b, 0);
+  const userTotal = Object.values(usersByRole).reduce((a, b) => a + b, 0);
 
   return (
     <div className="min-h-screen bg-surface-50 pb-16">
@@ -269,7 +266,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-surface-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
             <h2 className="text-base font-semibold text-surface-900">Recent Bookings</h2>
-            <Link to="/admin/users">
+            <Link to="/admin/bookings">
               <Button variant="ghost" size="sm">
                 View All
               </Button>
@@ -301,7 +298,7 @@ export default function AdminDashboard() {
                       ? `${booking.user.firstName ?? ''} ${booking.user.lastName ?? ''}`.trim()
                       : '—';
                     const hotelName = booking.room?.hotel?.name ?? '—';
-                    const roomName  = booking.room?.name ?? '—';
+                    const roomName = booking.room?.name ?? '—';
 
                     return (
                       <tr
@@ -347,16 +344,9 @@ export default function AdminDashboard() {
             <Link to="/admin/users">
               <Button leftIcon={Users}>Manage Users</Button>
             </Link>
-            <Button
-              variant="secondary"
-              leftIcon={CalendarCheck}
-              onClick={() => setBookingsView(v => v === 'table' ? 'detail' : 'table')}
-            >
-              View All Bookings
-            </Button>
-            <Link to="/admin/hotels">
-              <Button variant="outline" leftIcon={Building2}>
-                Manage Hotels
+            <Link to="/admin/bookings">
+              <Button variant="secondary" leftIcon={CalendarCheck}>
+                View All Bookings
               </Button>
             </Link>
           </div>

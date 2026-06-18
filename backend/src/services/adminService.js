@@ -25,6 +25,7 @@ class AdminService {
       prisma.reservation.findMany({
         include: {
           user: { select: { firstName: true, lastName: true, email: true } },
+          room: { select: { name: true, hotel: { select: { name: true } } } },
         },
         orderBy: { createdAt: 'desc' },
         take: 10,
@@ -101,6 +102,56 @@ class AdminService {
   }
 
   /**
+   * Get all bookings with pagination, search, and status filter.
+   */
+  async getBookings(page = 1, limit = 20, status, search) {
+    const where = {};
+    if (status) where.status = status;
+    if (search) {
+      where.OR = [
+        { user: { firstName: { contains: search, mode: 'insensitive' } } },
+        { user: { lastName:  { contains: search, mode: 'insensitive' } } },
+        { room: { hotel: { name: { contains: search, mode: 'insensitive' } } } },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [bookings, total] = await Promise.all([
+      prisma.reservation.findMany({
+        where,
+        include: {
+          user: { select: { firstName: true, lastName: true, email: true } },
+          room: { select: { name: true, hotel: { select: { name: true } } } },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.reservation.count({ where }),
+    ]);
+
+    return {
+      bookings,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  /**
+   * Cancel a booking (admin override).
+   */
+  async cancelBooking(reservationId) {
+    const reservation = await prisma.reservation.findUnique({ where: { id: reservationId } });
+    if (!reservation) throw ApiError.notFound('Booking not found');
+    if (reservation.status === 'CANCELLED') throw ApiError.badRequest('Booking is already cancelled');
+
+    return prisma.reservation.update({
+      where: { id: reservationId },
+      data: { status: 'CANCELLED' },
+    });
+  }
+
+  /**
    * Update user status (ban/activate).
    */
   async updateUserStatus(userId, isActive) {
@@ -117,29 +168,6 @@ class AdminService {
     return updated;
   }
 
-  /**
-   * Get audit logs.
-   */
-  async getAuditLogs(page = 1, limit = 50) {
-    const skip = (page - 1) * limit;
-
-    const [logs, total] = await Promise.all([
-      prisma.auditLog.findMany({
-        include: {
-          user: { select: { firstName: true, lastName: true, email: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      }),
-      prisma.auditLog.count(),
-    ]);
-
-    return {
-      logs,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    };
-  }
 }
 
 export default new AdminService();

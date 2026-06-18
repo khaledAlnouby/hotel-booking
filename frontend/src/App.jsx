@@ -47,6 +47,7 @@ const ManageRooms   = lazy(() => import('./pages/owner/ManageRooms'));
 // Protected – ADMIN only
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminUsers     = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminBookings  = lazy(() => import('./pages/admin/AdminBookings'));
 
 // Catch-all
 const NotFound      = lazy(() => import('./pages/NotFound'));
@@ -127,8 +128,9 @@ function App() {
 
           {/* Protected – ADMIN only */}
           <Route element={<RoleRoute roles={['ADMIN']} />}>
-            <Route path="/admin"       element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin"            element={<AdminDashboard />} />
+            <Route path="/admin/users"      element={<AdminUsers />} />
+            <Route path="/admin/bookings"   element={<AdminBookings />} />
           </Route>
 
           {/* Catch-all */}

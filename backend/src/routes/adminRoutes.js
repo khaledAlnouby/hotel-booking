@@ -10,6 +10,7 @@ router.use(authenticate, authorize('ADMIN'));
 router.get('/dashboard', adminController.getDashboard);
 router.get('/users', adminController.getUsers);
 router.put('/users/:id/status', adminController.updateUserStatus);
-router.get('/audit-logs', adminController.getAuditLogs);
+router.get('/bookings', adminController.getBookings);
+router.put('/bookings/:id/cancel', adminController.cancelBooking);
 
 export default router;

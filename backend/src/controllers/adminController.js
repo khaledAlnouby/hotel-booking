@@ -26,6 +26,30 @@ class AdminController {
     }
   }
 
+  async getBookings(req, res, next) {
+    try {
+      const { page, limit, status, search } = req.query;
+      const result = await adminService.getBookings(
+        parseInt(page) || 1,
+        parseInt(limit) || 20,
+        status,
+        search
+      );
+      ApiResponse.paginated(res, result.bookings, result.pagination);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async cancelBooking(req, res, next) {
+    try {
+      const booking = await adminService.cancelBooking(req.params.id);
+      ApiResponse.success(res, booking, 'Booking cancelled');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateUserStatus(req, res, next) {
     try {
       const { isActive } = req.body;
@@ -36,15 +60,6 @@ class AdminController {
     }
   }
 
-  async getAuditLogs(req, res, next) {
-    try {
-      const { page, limit } = req.query;
-      const result = await adminService.getAuditLogs(parseInt(page) || 1, parseInt(limit) || 50);
-      ApiResponse.paginated(res, result.logs, result.pagination);
-    } catch (error) {
-      next(error);
-    }
-  }
 }
 
 export default new AdminController();
